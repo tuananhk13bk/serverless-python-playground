@@ -1,0 +1,50 @@
+service: serverless-python-playground
+
+provider:
+  name: aws
+  runtime: python3.8
+  region: us-west-2
+  stage: prod
+  memorySize: 128
+  timeout: 5
+  endpointType: regional
+  environment:
+    NOTES_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+
+functions:
+  hello:
+    handler: handler.hello
+
+resources:
+  Resources:
+    NotesTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.environment.NOTES_TABLE}
+        AttributeDefinitions:
+          - AttributeName: user_id
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+          - AttributeName: note_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: user_id
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: note_id-index
+            KeySchema:
+              - AttributeName: note_id
+                AttributeType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+        
