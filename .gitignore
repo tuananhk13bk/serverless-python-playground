@@ -18,3 +18,6 @@ var/
 
 # Serverless directories
 .serverless
+
+# Nodejs package
+node_modules/

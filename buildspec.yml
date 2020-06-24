@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing serverless...
+      - npm install -g serverless
+      - echo Installing servless plugin serverless-python-requirements...
+      - sls plugin install -n serverless-python-requirements
+  # pre_build:
+  #   commands:
+  #     - echo Install source PIP dependencies...
+  #     - pip install
+  build:
+    commands:
+      - echo Deployment started on `date`
+      - echo Deploying with the Serverless Framework
+      - sls deploy -v -s $ENV_NAME
+  post_build:
+    commands:
+      = echo Deployment completed on `date`
